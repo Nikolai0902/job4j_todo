@@ -37,4 +37,19 @@ __**kbus94@yandex.ru**__
 mvn spring-boot:run
 ```
 ### Интерфейс:
-Главная страница.
+Главная страница.Страница со списком всех заданий
+![img.JPG](img/main.JPG)
+Страницы со списком всех выполенных и невыполненных заданий
+![img.JPG](img/taskTrue.JPG)
+![img.JPG](img/taskFalse.JPG)
+Страница создания задачи
+![img.JPG](img/add.JPG)
+Страница просмотра информации о задаче
+![img.JPG](img/taskInfo.JPG)
+Страница редактирования задачи
+![img.JPG](img/taskEdit.JPG)
+
+
+
+
+
