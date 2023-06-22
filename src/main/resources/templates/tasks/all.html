@@ -25,13 +25,13 @@
 
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container">
-            <a class="navbar-brand" th:href="@{/task/allTasks}">TODO список</a>
+            <a class="navbar-brand" th:href="@{/task/all}">TODO список</a>
             <div class="collapse navbar-collapse">
                 <div class="navbar-nav me-auto">
-                    <a class="nav-item nav-link" th:href="@{/task/addTask}">Добавить задание</a>
-                    <a class="nav-item nav-link active" th:href="@{/task/allTasks}">Все</a>
-                    <a class="nav-item nav-link active" th:href="@{/task/allTasksDoneTrue}">Выполненные</a>
-                    <a class="nav-item nav-link active" th:href="@{/task/allTasksDoneFalse}">Новые</a>
+                    <a class="nav-item nav-link" th:href="@{/task/add}">Добавить задание</a>
+                    <a class="nav-item nav-link active" th:href="@{/task/all}">Все</a>
+                    <a class="nav-item nav-link active" th:href="@{/task/allDoneTrue}">Выполненные</a>
+                    <a class="nav-item nav-link active" th:href="@{/task/allDoneFalse}">Новые</a>
                 </div>
             </div>
         </div>
@@ -41,8 +41,9 @@
         <table class="table">
             <thead>
             <tr>
-                <th scope="col">Номер задания</th>
-                <th scope="col">Задача</th>
+                <th scope="col">Номер</th>
+                <th scope="col">Название</th>
+                <th scope="col">Описание задания</th>
                 <th scope="col">Дата создания</th>
                 <th><i class="bi bi-square">Состояние</i></th>
             </tr>
@@ -50,7 +51,8 @@
             <tbody>
             <tr th:each="task: ${tasks}">
                 <td th:text="${task.id}" />
-                <td><a th:text="${task.description}" th:href="@{/task/formOneTask/{idTask}(idTask=${task.id})}"></a></td>
+                <td th:text="${task.title}" />
+                <td><a th:text="${task.description}" th:href="@{/task/formOne/{id}(id=${task.id})}"></a></td>
                 <td th:text="${#temporals.format(task.created, 'HH:mm dd-MM-yyyy')}" />
                 <td>
                     <span th:if="${task.done}">

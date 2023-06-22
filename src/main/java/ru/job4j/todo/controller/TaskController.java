@@ -27,67 +27,73 @@ public class TaskController {
 
     /**
      * Возвращает страницу со списком всех заданий.
+     *
      * @param model
      * @return возвращает предствление главная страница (все задания).
      */
-    @GetMapping({"/", "/allTasks"})
+    @GetMapping({"/", "/all"})
     public String getAllTask(Model model) {
         model.addAttribute("tasks", taskService.allTask());
-        return "allTasks";
+        return "tasks/all";
     }
 
     /**
      * Возвращает страницу всех выполненных заданий.
+     *
      * @param model
      * @return возвращает предствление выполненных заданий.
      */
-    @GetMapping({"/allTasksDoneTrue"})
-    public String getAllTaskDoneTrue(Model model) {
-        model.addAttribute("tasks", taskService.allTaskTrue());
-        return "allTasks";
+    @GetMapping({"/allDoneTrue"})
+    public String getAllDoneTrue(Model model) {
+        model.addAttribute("tasks", taskService.allTaskTrueOrFalse(true));
+        return "tasks/all";
     }
 
     /**
      * Возвращает страницу всех невыполненных заданий.
+     *
      * @param model
      * @return возвращает предствление невыполненных заданий.
      */
-    @GetMapping({"/allTasksDoneFalse"})
-    public String getAllTaskDoneFalse(Model model) {
-        model.addAttribute("tasks", taskService.allTaskFalse());
-        return "allTasks";
+    @GetMapping({"/allDoneFalse"})
+    public String getAllDoneFalse(Model model) {
+        model.addAttribute("tasks", taskService.allTaskTrueOrFalse(false));
+        return "tasks/all";
     }
 
     /**
      * Возвращает страницу добавления нового задания.
+     *
      * @param model
      * @return возвращает предствление добавления нового задания.
      */
-    @GetMapping("/addTask")
-    public String createTask(Model model) {
+    @GetMapping("/add")
+    public String create(Model model) {
         model.addAttribute("tasks", taskService.allTask());
-        return "addTask";
+        return "tasks/add";
     }
 
     /**
      * Метод создания задания.
+     *
      * @param task обьект задания собранный в модели.
      * @return список всех задний.
      */
-    @PostMapping("/createTask")
-    public String createTask(@ModelAttribute Task task) {
+    @PostMapping("/create")
+    public String create(@ModelAttribute Task task) {
         taskService.add(task);
-        return "redirect:/task/allTasks";
+        return "redirect:/task/all";
     }
 
     /**
      * Возвращает страницу с описанием конкретного задания.
+     *
      * @param model
-     * @param id конретного задания.
+     * @param id    конретного задания.
      * @return возвращает предствление задания по id.
      */
-    @GetMapping("/formOneTask/{idTask}")
-    public String oneTask(Model model, @PathVariable("idTask") int id) {
+    @GetMapping("/formOne/{id}")
+    public String one(Model model, @PathVariable("id") int id) {
         var taskOptional = taskService.findById(id);
         if (taskOptional.isEmpty()) {
             model.addAttribute("message", "tasks id not found");
@@ -95,37 +101,35 @@ public class TaskController {
             return "errors/404";
         }
         model.addAttribute("task", taskOptional.get());
-        return "formOneTask";
+        return "tasks/formOne";
     }
 
     /**
      * Перевод задания в состояние выполненного после нажатия "Выполнено".
+     *
      * @param model
-     * @param id конретного задания.
+     * @param id    конретного задания.
      * @return список всех задний.
      */
-    @PostMapping("/doneTask/{id}")
-    public String doneTask(Model model, @PathVariable("id") int id) {
-        var taskOptional = taskService.findById(id);
-        if (taskOptional.isEmpty()) {
-            model.addAttribute("message", "tasks id not found");
-            LOG.error(String.format("tasks id %d not found", id));
+    @PostMapping("/done/{id}")
+    public String done(Model model, @PathVariable("id") int id) {
+        if (!taskService.updateDone(id)) {
+            model.addAttribute("message", "Не удалось обновить");
+            LOG.error("tasks has not been update");
             return "errors/404";
         }
-        Task task = taskOptional.get();
-        task.setDone(true);
-        taskService.update(task);
-        return "redirect:/task/allTasks";
+        return "redirect:/task/all";
     }
 
     /**
      * Возвращает страницу с редактированием конкретного задания после нажатия "Редактировать".
+     *
      * @param model
-     * @param id конретного задания.
+     * @param id    конретного задания.
      * @return возвращает предствление редактирования задания.
      */
-    @GetMapping("/formUpdateTask/{idT}")
-    public String formUpdateTask(Model model, @PathVariable("idT") int id) {
+    @GetMapping("/formUpdate/{id}")
+    public String formUpdate(Model model, @PathVariable("id") int id) {
         var taskOptional = taskService.findById(id);
         if (taskOptional.isEmpty()) {
             model.addAttribute("message", "tasks id not found");
@@ -133,28 +137,38 @@ public class TaskController {
             return "errors/404";
         }
         model.addAttribute("task", taskOptional.get());
-        return "updateTask";
+        return "tasks/update";
     }
 
     /**
      * Метод редактирования задания по собранной модели из представления.
+     *
      * @param task обьект задания собранный в модели.
      * @return список всех задний.
      */
-    @PostMapping("/updateTask")
-    public String updateTask(@ModelAttribute Task task) {
-        taskService.update(task);
-        return "redirect:/task/allTasks";
+    @PostMapping("/update")
+    public String update(Model model, @ModelAttribute Task task) {
+        if (!taskService.update(task)) {
+            model.addAttribute("message", "Не удалось обновить");
+            LOG.error("tasks has not been update");
+            return "errors/404";
+        }
+        return "redirect:/task/all";
     }
 
     /**
      * Выполняет удаление задания после нажатия "Удалить".
+     *
      * @param id конретного задания.
      * @return список всех задний.
      */
     @GetMapping("/delete/{id}")
-    public String deleteTask(@PathVariable("id") int id) {
-        taskService.delete(id);
-        return "redirect:/task/allTasks";
+    public String delete(Model model, @PathVariable("id") int id) {
+        if (!taskService.delete(id)) {
+            model.addAttribute("message", "Не удалось удалить");
+            LOG.error("tasks has not been delete");
+            return "errors/404";
+        }
+        return "redirect:/task/all";
     }
 }

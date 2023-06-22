@@ -25,7 +25,7 @@ public class SimpleTaskStore implements TaskStore {
 
     /**
      * Сохранить в базе.
-     * @param task звдвчу.
+     * @param task задачу.
      * @return задачу с id.
      */
     @Override
@@ -48,16 +48,36 @@ public class SimpleTaskStore implements TaskStore {
      * @param task пользователь.
      */
     @Override
-    public void update(Task task) {
+    public boolean update(Task task) {
         Session session = sf.openSession();
+        boolean result = false;
         try {
             session.beginTransaction();
-            session.createQuery(
-                            "UPDATE Task SET description = :fDescription, created = :fСreated, done = :fDone WHERE id = :fId")
-                    .setParameter("fDescription", task.getDescription())
-                    .setParameter("fСreated", task.getCreated())
-                    .setParameter("fDone", task.isDone())
-                    .setParameter("fId", task.getId())
+            session.update(task);
+            session.getTransaction().commit();
+            result = true;
+        } catch (Exception e) {
+            session.getTransaction().rollback();
+        } finally {
+            session.close();
+        }
+        return result;
+    }
+
+    /**
+     * Обновить только поле done у задачи.
+     * @param id задачи.
+     */
+    @Override
+    public boolean updateDone(int id) {
+        Session session = sf.openSession();
+        int result = 0;
+        try {
+            session.beginTransaction();
+            result = session.createQuery(
+                            "UPDATE Task SET done = :fDone WHERE id = :fId")
+                    .setParameter("fDone", true)
+                    .setParameter("fId", id)
                     .executeUpdate();
             session.getTransaction().commit();
         } catch (Exception e) {
@@ -65,19 +85,21 @@ public class SimpleTaskStore implements TaskStore {
         } finally {
             session.close();
         }
+        return result > 0;
     }
 
     /**
      * Удалить задачу по id.
-     * @param taskId ID
+     * @param id ID
      */
     @Override
-    public void delete(int taskId) {
+    public boolean delete(int id) {
         Session session = sf.openSession();
+        int result = 0;
         try {
             session.beginTransaction();
-            session.createQuery("DELETE Task WHERE id = :id")
-                    .setParameter("id", taskId)
+            result = session.createQuery("DELETE Task WHERE id = :id")
+                    .setParameter("id", id)
                     .executeUpdate();
             session.getTransaction().commit();
         } catch (Exception e) {
@@ -85,20 +107,22 @@ public class SimpleTaskStore implements TaskStore {
         } finally {
             session.close();
         }
+        return result > 0;
     }
 
     /**
      * Найти задачу по ID
+     * @param id ID
      * @return задача.
      */
     @Override
-    public Optional<Task> findById(int taskId) {
+    public Optional<Task> findById(int id) {
         Session session = sf.openSession();
         Optional<Task> task = Optional.empty();
         try {
             session.beginTransaction();
             Query<Task> query = session.createQuery("FROM Task WHERE id = :id", Task.class);
-            query.setParameter("id", taskId);
+            query.setParameter("id", id);
             task = query.uniqueResultOptional();
             session.getTransaction().commit();
         } catch (Exception e) {
@@ -131,37 +155,23 @@ public class SimpleTaskStore implements TaskStore {
     }
 
     /**
-     * Список задач выполненных.
+     * Список задач выполненных или нет взависимости от flag.
+     * @param flag флаг
      * @return список задач.
      */
     @Override
-    public List<Task> findAllDoneTrue() {
+    public List<Task> findAllDoneTrueOrFalse(boolean flag) {
         Session session = sf.openSession();
         List<Task> tasks = new ArrayList<>();
         try {
             session.beginTransaction();
-            Query<Task> query = session.createQuery("FROM Task WHERE done = true", Task.class);
-            tasks = query.getResultList();
-            session.getTransaction().commit();
-        } catch (Exception e) {
-            session.getTransaction().rollback();
-        } finally {
-            session.close();
-        }
-        return tasks;
-    }
-
-    /**
-     * Список задач выполненных.
-     * @return список задач.
-     */
-    @Override
-    public List<Task> findAllDoneFalse() {
-        Session session = sf.openSession();
-        List<Task> tasks = new ArrayList<>();
-        try {
-            session.beginTransaction();
-            Query<Task> query = session.createQuery("FROM Task WHERE done = false", Task.class);
+            String request = "";
+            if (!flag) {
+                request = "FROM Task WHERE done = false";
+            } else {
+                request = "FROM Task WHERE done = true";
+            }
+            Query<Task> query = session.createQuery(request, Task.class);
             tasks = query.getResultList();
             session.getTransaction().commit();
         } catch (Exception e) {

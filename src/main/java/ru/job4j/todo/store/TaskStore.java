@@ -13,15 +13,15 @@ public interface TaskStore {
 
     Task create(Task task);
 
-    void update(Task task);
+    boolean update(Task task);
 
-    void delete(int taskId);
+    boolean updateDone(int id);
+
+    boolean delete(int taskId);
 
     Optional<Task> findById(int taskId);
 
     List<Task> findAllOrderById();
 
-    List<Task> findAllDoneTrue();
-
-    List<Task> findAllDoneFalse();
+    List<Task> findAllDoneTrueOrFalse(boolean flag);
 }

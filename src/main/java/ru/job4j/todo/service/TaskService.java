@@ -12,15 +12,15 @@ public interface TaskService {
 
     Task add(Task task);
 
-    void update(Task task);
+    boolean update(Task task);
 
-    void delete(int id);
+    boolean updateDone(int id);
+
+    boolean delete(int id);
 
     Optional<Task> findById(int id);
 
     List<Task> allTask();
 
-    List<Task> allTaskTrue();
-
-    List<Task> allTaskFalse();
+    List<Task> allTaskTrueOrFalse(boolean flag);
 }
