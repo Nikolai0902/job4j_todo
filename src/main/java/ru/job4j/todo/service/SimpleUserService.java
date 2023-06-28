@@ -2,7 +2,6 @@ package ru.job4j.todo.service;
 
 import org.springframework.stereotype.Service;
 import ru.job4j.todo.model.User;
-import ru.job4j.todo.store.SimpleTaskStore;
 import ru.job4j.todo.store.SimpleUserStore;
 
 import java.util.List;
@@ -23,27 +22,7 @@ public class SimpleUserService implements UserService {
     }
 
     @Override
-    public boolean update(User user) {
-        return userStore.update(user);
-    }
-
-    @Override
-    public boolean delete(int id) {
-        return userStore.delete(id);
-    }
-
-    @Override
-    public List<User> findAllOrderById() {
-        return userStore.findAllOrderById();
-    }
-
-    @Override
-    public Optional<User> findById(int id) {
-        return userStore.findById(id);
-    }
-
-    @Override
-    public Optional<User> findByLoginAndPW(String login, String password) {
-        return userStore.findByLoginAndPW(login, password);
+    public Optional<User> findByLoginAndPassword(String login, String password) {
+        return userStore.findByLoginAndPassword(login, password);
     }
 }

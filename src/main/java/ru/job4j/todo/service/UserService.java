@@ -9,13 +9,5 @@ public interface UserService {
 
     Optional<User> create(User user);
 
-    boolean update(User user);
-
-    boolean delete(int id);
-
-    List<User> findAllOrderById();
-
-    Optional<User> findById(int id);
-
-    Optional<User> findByLoginAndPW(String login, String password);
+    Optional<User> findByLoginAndPassword(String login, String password);
 }
