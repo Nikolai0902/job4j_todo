@@ -30,8 +30,8 @@
                 <div class="navbar-nav me-auto">
                     <a class="nav-item nav-link" th:href="@{/task/add}">Добавить задание</a>
                     <a class="nav-item nav-link active" th:href="@{/task/all}">Все</a>
-                    <a class="nav-item nav-link active" th:href="@{/task/allDoneTrue}">Выполненные</a>
-                    <a class="nav-item nav-link active" th:href="@{/task/allDoneFalse}">Новые</a>
+                    <a class="nav-item nav-link active" th:href="@{/task/done}">Выполненные</a>
+                    <a class="nav-item nav-link active" th:href="@{/task/undone}">Новые</a>
 
                     <div class="d-flex" th:if="${user.name == 'Гость'}">
                         <a class="nav-link text-secondary me-3" th:href="@{/users/register}">Регистрация</a>
@@ -79,7 +79,7 @@
                     <div class="col-4">
                         <button class="btn btn-success w-100" type="submit">Выполнить</button>
                     </div>
-                    <div class="col-4"><a class="btn btn-primary w-100" th:href="@{/task/formUpdate/{id}(id=${task.id})}">Редактировать</a>
+                    <div class="col-4"><a class="btn btn-primary w-100" th:href="@{/task/update/{id}(id=${task.id})}">Редактировать</a>
                     </div>
                     <div class="col-4"><a class="btn btn-danger w-100" th:href="@{/task/delete/{id}(id=${task.id})}">Удалить</a>
                     </div>

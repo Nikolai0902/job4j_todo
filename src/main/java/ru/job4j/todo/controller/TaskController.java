@@ -43,7 +43,7 @@ public class TaskController {
      * @param model
      * @return возвращает предствление выполненных заданий.
      */
-    @GetMapping({"/allDoneTrue"})
+    @GetMapping({"/done"})
     public String getAllDoneTrue(Model model) {
         model.addAttribute("tasks", taskService.allTaskTrueOrFalse(true));
         return "tasks/all";
@@ -55,7 +55,7 @@ public class TaskController {
      * @param model
      * @return возвращает предствление невыполненных заданий.
      */
-    @GetMapping({"/allDoneFalse"})
+    @GetMapping({"/undone"})
     public String getAllDoneFalse(Model model) {
         model.addAttribute("tasks", taskService.allTaskTrueOrFalse(false));
         return "tasks/all";
@@ -92,7 +92,7 @@ public class TaskController {
      * @param id    конретного задания.
      * @return возвращает предствление задания по id.
      */
-    @GetMapping("/formOne/{id}")
+    @GetMapping("/one/{id}")
     public String one(Model model, @PathVariable("id") int id) {
         var taskOptional = taskService.findById(id);
         if (taskOptional.isEmpty()) {
@@ -101,7 +101,7 @@ public class TaskController {
             return "errors/404";
         }
         model.addAttribute("task", taskOptional.get());
-        return "tasks/formOne";
+        return "tasks/one";
     }
 
     /**
@@ -128,7 +128,7 @@ public class TaskController {
      * @param id    конретного задания.
      * @return возвращает предствление редактирования задания.
      */
-    @GetMapping("/formUpdate/{id}")
+    @GetMapping("/update/{id}")
     public String formUpdate(Model model, @PathVariable("id") int id) {
         var taskOptional = taskService.findById(id);
         if (taskOptional.isEmpty()) {

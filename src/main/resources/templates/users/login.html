@@ -22,8 +22,8 @@
                     <div class="navbar-nav me-auto">
                         <a class="nav-item nav-link" th:href="@{/task/add}">Добавить задание</a>
                         <a class="nav-item nav-link active" th:href="@{/task/all}">Все</a>
-                        <a class="nav-item nav-link active" th:href="@{/task/allDoneTrue}">Выполненные</a>
-                        <a class="nav-item nav-link active" th:href="@{/task/allDoneFalse}">Новые</a>
+                        <a class="nav-item nav-link active" th:href="@{/task/done}">Выполненные</a>
+                        <a class="nav-item nav-link active" th:href="@{/task/undone}">Новые</a>
 
                         <div class="d-flex" th:if="${user.name == 'Гость'}">
                             <a class="nav-link text-secondary me-3" th:href="@{/users/register}">Регистрация</a>
