@@ -1,184 +1,127 @@
 package ru.job4j.todo.store;
 
 import lombok.AllArgsConstructor;
-import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.query.Query;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 import ru.job4j.todo.model.Task;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
  * Класс репозитория - задача.
  * Реализация методов работы с обьектом Task,
  * через язык Hibernate Query Language (далее - HQL).
+ *
  * @author Buslaev
  */
 @Repository
 @AllArgsConstructor
 public class SimpleTaskStore implements TaskStore {
 
+    private static final Logger LOG = LoggerFactory.getLogger(SimpleTaskStore.class.getName());
+    private final CrudRepository crudRepository;
     private final SessionFactory sf;
 
     /**
      * Сохранить в базе.
+     *
      * @param task задачу.
      * @return задачу с id.
      */
     @Override
     public Task create(Task task) {
-        Session session = sf.openSession();
         try {
-            session.beginTransaction();
-            session.save(task);
-            session.getTransaction().commit();
+            crudRepository.run(session -> session.persist(task));
         } catch (Exception e) {
-            session.getTransaction().rollback();
-        } finally {
-            session.close();
+            LOG.error("create tasks", e);
         }
         return task;
     }
 
     /**
      * Обновить в базе задачу.
+     *
      * @param task пользователь.
      */
     @Override
     public boolean update(Task task) {
-        Session session = sf.openSession();
         boolean result = false;
         try {
-            session.beginTransaction();
-            session.update(task);
-            session.getTransaction().commit();
+            crudRepository.run(session -> session.merge(task));
             result = true;
         } catch (Exception e) {
-            session.getTransaction().rollback();
-        } finally {
-            session.close();
+            LOG.error("update tasks", e);
         }
         return result;
     }
 
     /**
      * Обновить только поле done у задачи.
+     *
      * @param id задачи.
      */
     @Override
     public boolean updateDone(int id) {
-        Session session = sf.openSession();
-        int result = 0;
+        boolean result = false;
         try {
-            session.beginTransaction();
-            result = session.createQuery(
-                            "UPDATE Task SET done = :fDone WHERE id = :fId")
-                    .setParameter("fDone", true)
-                    .setParameter("fId", id)
-                    .executeUpdate();
-            session.getTransaction().commit();
+            crudRepository.run("UPDATE Task SET done = :fDone WHERE id = :fId", Map.of("fDone", true, "fId", id));
+            result = true;
         } catch (Exception e) {
-            session.getTransaction().rollback();
-        } finally {
-            session.close();
+            LOG.error("done tasks", e);
         }
-        return result > 0;
+        return result;
     }
 
     /**
      * Удалить задачу по id.
+     *
      * @param id ID
      */
     @Override
     public boolean delete(int id) {
-        Session session = sf.openSession();
-        int result = 0;
+        boolean result = false;
         try {
-            session.beginTransaction();
-            result = session.createQuery("DELETE Task WHERE id = :id")
-                    .setParameter("id", id)
-                    .executeUpdate();
-            session.getTransaction().commit();
+            crudRepository.run("DELETE Task WHERE id = :id", Map.of("id", id));
+            result = true;
         } catch (Exception e) {
-            session.getTransaction().rollback();
-        } finally {
-            session.close();
+            LOG.error("done tasks", e);
         }
-        return result > 0;
+        return result;
     }
 
     /**
      * Найти задачу по ID
+     *
      * @param id ID
      * @return задача.
      */
     @Override
     public Optional<Task> findById(int id) {
-        Session session = sf.openSession();
-        Optional<Task> task = Optional.empty();
-        try {
-            session.beginTransaction();
-            Query<Task> query = session.createQuery("FROM Task WHERE id = :id", Task.class);
-            query.setParameter("id", id);
-            task = query.uniqueResultOptional();
-            session.getTransaction().commit();
-        } catch (Exception e) {
-            session.getTransaction().rollback();
-        } finally {
-            session.close();
-        }
-        return task;
+        return crudRepository.optional("FROM Task WHERE id = :id", Task.class, Map.of("id", id));
     }
 
     /**
      * Список задач отсортированных по id.
+     *
      * @return список задач.
      */
     @Override
     public List<Task> findAllOrderById() {
-        Session session = sf.openSession();
-        List<Task> tasks = new ArrayList<>();
-        try {
-            session.beginTransaction();
-            Query<Task> query = session.createQuery("FROM Task order by id ASC", Task.class);
-            tasks = query.getResultList();
-            session.getTransaction().commit();
-        } catch (Exception e) {
-            session.getTransaction().rollback();
-        } finally {
-            session.close();
-        }
-        return tasks;
+        return crudRepository.query("FROM Task order by id ASC", Task.class);
     }
 
     /**
      * Список задач выполненных или нет взависимости от flag.
+     *
      * @param flag флаг
      * @return список задач.
      */
     @Override
     public List<Task> findAllDoneTrueOrFalse(boolean flag) {
-        Session session = sf.openSession();
-        List<Task> tasks = new ArrayList<>();
-        try {
-            session.beginTransaction();
-            String request = "";
-            if (!flag) {
-                request = "FROM Task WHERE done = false";
-            } else {
-                request = "FROM Task WHERE done = true";
-            }
-            Query<Task> query = session.createQuery(request, Task.class);
-            tasks = query.getResultList();
-            session.getTransaction().commit();
-        } catch (Exception e) {
-            session.getTransaction().rollback();
-        } finally {
-            session.close();
-        }
-        return tasks;
+        return crudRepository.query("FROM Task WHERE done = :done", Task.class, Map.of("done", flag));
     }
 }
