@@ -55,6 +55,7 @@
                 <th scope="col">Название</th>
                 <th scope="col">Описание задания</th>
                 <th scope="col">Дата создания</th>
+                <th scope="col">Пользователь</th>
                 <th><i class="bi bi-square">Состояние</i></th>
             </tr>
             </thead>
@@ -64,6 +65,7 @@
                 <td th:text="${task.title}" />
                 <td><a th:text="${task.description}" th:href="@{/task/one/{id}(id=${task.id})}"></a></td>
                 <td th:text="${#temporals.format(task.created, 'HH:mm dd-MM-yyyy')}" />
+                <td th:text="${task?.user?.name}" />
                 <td>
                     <span th:if="${task.done}">
                           <i class="bi bi-check-square"></i>

@@ -1,0 +1,1 @@
+ALTER TABLE tasks ADD column if not exists user_id int references todo_user(id);
