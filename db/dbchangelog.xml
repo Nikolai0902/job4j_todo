@@ -8,4 +8,7 @@
     <include file="scripts/001_ddl_create_initial_schema.sql" relativeToChangelogFile="true"/>
     <include file="scripts/002_ddl_create_initial_todo_user.sql" relativeToChangelogFile="true"/>
     <include file="scripts/003_ddl_alter_column_tasks.sql" relativeToChangelogFile="true"/>
+    <include file="scripts/004_ddl_create_initial_priorities.sql" relativeToChangelogFile="true"/>
+    <include file="scripts/005_ddl_alter_column_priorityId_tasks.sql" relativeToChangelogFile="true"/>
+    <include file="scripts/006_ddl_update_tasks_priorityId.sql" relativeToChangelogFile="true"/>
 </databaseChangeLog>

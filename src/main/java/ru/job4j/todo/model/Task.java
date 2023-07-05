@@ -8,6 +8,15 @@ import java.time.LocalDateTime;
 /**
  * Модель данных задача.
  * @author Buslaev
+ *
+ *
+ * @ManyToOne - связь Задач и одного Пользователя.
+ * @JoinColumn - по какому полю связан задачи (Task) и User в таблице todo_user.
+ *
+ * @ManyToOne - связь Задач и приоритета.
+ * fetch = FetchType.LAZY - в аннотации ManyToOne используется ленивая стратегия загрузки.
+ * @JoinColumn - по какому полю связан задачи (Task) и приоритет в таблице priorities.
+ *
  */
 @NoArgsConstructor
 @Getter
@@ -30,4 +39,8 @@ public class Task {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "priority_id")
+    private Priority priority;
 }
