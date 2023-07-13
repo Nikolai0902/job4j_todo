@@ -64,6 +64,24 @@
                         <input type="text" class="form-control" name="description" id="description">
                     </div>
 
+                    <div class="form-group">
+                        <label for="priority.id">Приоритет</label>
+                        <select class="form-control" id="priority.id" name="priority.id" th:object="${priorities}">
+                            <option th:each="priority: ${priorities}" th:value="${priority.id}" th:text="${priority.name}">
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="categories_id"><b>Категории</b></label>
+                        <select class="form-control" id="categories_id" name="listIdCategories"
+                                th:size="${categories.size()}" multiple="multiple" required>
+                            <option th:each="category : ${categories}" th:value="${category.id}"
+                                    th:text="${category.name}">
+                            </option>
+                        </select>
+                    </div>
+
                     <div class="mb-3 row">
                         <div class="col-6"></div>
                         <div class="col-6">

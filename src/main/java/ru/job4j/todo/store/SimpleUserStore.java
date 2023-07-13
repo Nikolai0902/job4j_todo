@@ -7,8 +7,6 @@ import org.hibernate.query.Query;
 import org.springframework.stereotype.Repository;
 import ru.job4j.todo.model.User;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 /**

@@ -58,6 +58,7 @@
                 <th scope="col">Пользователь</th>
                 <th><i class="bi bi-square">Состояние</i></th>
                 <th scope="col">Приоритет</th>
+                <th scope="col">Категория</th>
             </tr>
             </thead>
             <tbody>
@@ -76,6 +77,12 @@
                     </span>
                 </td>
                 <td th:text="${task?.priority?.name}" />
+                <td>
+                    <p> <th:block th:each="category: ${task.getCategory}">
+                        <span th:text="${category.name}"></span>
+                    </th:block>
+                    </p>
+                </td>
             </tr>
             </tbody>
         </table>

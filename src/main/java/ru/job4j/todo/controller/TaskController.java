@@ -5,11 +5,16 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import ru.job4j.todo.model.Priority;
 import ru.job4j.todo.model.Task;
 import ru.job4j.todo.model.User;
+import ru.job4j.todo.service.CategoryService;
+import ru.job4j.todo.service.PriorityService;
 import ru.job4j.todo.service.SimpleTaskService;
 
 import javax.servlet.http.HttpSession;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Контроллер. Задачи.
@@ -23,9 +28,13 @@ public class TaskController {
     private static final Logger LOG = LoggerFactory.getLogger(TaskController.class.getName());
 
     private final SimpleTaskService taskService;
+    private final CategoryService categoryService;
+    private final PriorityService priorityService;
 
-    public TaskController(SimpleTaskService taskService) {
+    public TaskController(SimpleTaskService taskService, CategoryService categoryService, PriorityService priorityService) {
         this.taskService = taskService;
+        this.categoryService = categoryService;
+        this.priorityService = priorityService;
     }
 
     /**
@@ -72,7 +81,8 @@ public class TaskController {
      */
     @GetMapping("/add")
     public String create(Model model) {
-        model.addAttribute("tasks", taskService.allTask());
+        model.addAttribute("priorities", priorityService.findAll())
+                .addAttribute("categories", categoryService.findAll());
         return "tasks/add";
     }
 
@@ -83,8 +93,14 @@ public class TaskController {
      * @return список всех задний.
      */
     @PostMapping("/create")
-    public String create(@ModelAttribute Task task, HttpSession httpSession) {
+    public String create(@ModelAttribute Task task, HttpSession httpSession,
+                         @RequestParam("listIdCategories") List<String> listIdCategories) {
         task.setUser((User) httpSession.getAttribute("user"));
+        var listFromStringToInt = listIdCategories
+                .stream()
+                .map(Integer::parseInt)
+                .collect(Collectors.toList());
+        task.setCategory(categoryService.findByLislId(listFromStringToInt));
         taskService.add(task);
         return "redirect:/task/all";
     }

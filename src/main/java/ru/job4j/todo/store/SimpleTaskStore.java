@@ -101,7 +101,9 @@ public class SimpleTaskStore implements TaskStore {
      */
     @Override
     public Optional<Task> findById(int id) {
-        return crudRepository.optional("FROM Task f JOIN FETCH f.priority WHERE f.id = :id", Task.class, Map.of("id", id));
+        return crudRepository.optional("FROM Task f JOIN FETCH f.priority "
+                + "JOIN FETCH f.category "
+                + "WHERE f.id = :id", Task.class, Map.of("id", id));
     }
 
     /**
@@ -111,7 +113,9 @@ public class SimpleTaskStore implements TaskStore {
      */
     @Override
     public List<Task> findAllOrderById() {
-        return crudRepository.query("FROM Task f JOIN FETCH f.priority order by f.id ASC", Task.class);
+        return crudRepository.query("FROM Task f JOIN FETCH f.priority "
+                + "JOIN FETCH f.category "
+                + "order by f.id ASC", Task.class);
     }
 
     /**
@@ -122,6 +126,8 @@ public class SimpleTaskStore implements TaskStore {
      */
     @Override
     public List<Task> findAllDoneTrueOrFalse(boolean flag) {
-        return crudRepository.query("FROM Task f JOIN FETCH f.priority WHERE f.done = :done", Task.class, Map.of("done", flag));
+        return crudRepository.query("FROM Task f JOIN FETCH f.priority "
+                + "JOIN FETCH f.category "
+                + "WHERE f.done = :done", Task.class, Map.of("done", flag));
     }
 }
