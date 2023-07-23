@@ -13,6 +13,8 @@ import ru.job4j.todo.service.PriorityService;
 import ru.job4j.todo.service.SimpleTaskService;
 
 import javax.servlet.http.HttpSession;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -39,37 +41,46 @@ public class TaskController {
 
     /**
      * Возвращает страницу со списком всех заданий.
+     * Учитываем отображение даты создания с учетом часовой зоны.
      *
      * @param model
      * @return возвращает предствление главная страница (все задания).
      */
     @GetMapping({"/", "/all"})
-    public String getAllTask(Model model) {
-        model.addAttribute("tasks", taskService.allTask());
+    public String getAllTask(Model model, HttpSession httpSession) {
+        User user = (User) httpSession.getAttribute("user");
+        model.addAttribute("tasks", taskService.allTask())
+                .addAttribute("timezone", ZoneId.of(user.getTimezone()));
         return "tasks/all";
     }
 
     /**
      * Возвращает страницу всех выполненных заданий.
+     * Учитываем отображение даты создания с учетом часовой зоны.
      *
      * @param model
      * @return возвращает предствление выполненных заданий.
      */
     @GetMapping({"/done"})
-    public String getAllDoneTrue(Model model) {
-        model.addAttribute("tasks", taskService.allTaskTrueOrFalse(true));
+    public String getAllDoneTrue(Model model, HttpSession httpSession) {
+        User user = (User) httpSession.getAttribute("user");
+        model.addAttribute("tasks", taskService.allTaskTrueOrFalse(true))
+                .addAttribute("timezone", ZoneId.of(user.getTimezone()));
         return "tasks/all";
     }
 
     /**
      * Возвращает страницу всех невыполненных заданий.
+     * Учитываем отображение даты создания с учетом часовой зоны.
      *
      * @param model
      * @return возвращает предствление невыполненных заданий.
      */
     @GetMapping({"/undone"})
-    public String getAllDoneFalse(Model model) {
-        model.addAttribute("tasks", taskService.allTaskTrueOrFalse(false));
+    public String getAllDoneFalse(Model model, HttpSession httpSession) {
+        User user = (User) httpSession.getAttribute("user");
+        model.addAttribute("tasks", taskService.allTaskTrueOrFalse(false))
+                .addAttribute("timezone", ZoneId.of(user.getTimezone()));
         return "tasks/all";
     }
 
@@ -88,6 +99,9 @@ public class TaskController {
 
     /**
      * Метод создания задания.
+     * Связываем создаваемую задачу с пользователем,
+     * устанавливаем время создания с учетом часовой зоны для данного пользователя,
+     * выбранные категории находим по id и добавляем к задаче.
      *
      * @param task обьект задания собранный в модели.
      * @return список всех задний.
@@ -95,7 +109,9 @@ public class TaskController {
     @PostMapping("/create")
     public String create(@ModelAttribute Task task, HttpSession httpSession,
                          @RequestParam("listIdCategories") List<String> listIdCategories) {
-        task.setUser((User) httpSession.getAttribute("user"));
+        User user = (User) httpSession.getAttribute("user");
+        task.setUser(user);
+        task.setCreated(LocalDateTime.now(ZoneId.of(user.getTimezone())));
         var listFromStringToInt = listIdCategories
                 .stream()
                 .map(Integer::parseInt)

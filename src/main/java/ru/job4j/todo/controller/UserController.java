@@ -11,6 +11,8 @@ import ru.job4j.todo.service.SimpleUserService;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.util.ArrayList;
+import java.util.TimeZone;
 
 @Controller
 @RequestMapping("/users")
@@ -24,15 +26,18 @@ public class UserController {
 
     /**
      * форма регистрации.
+     * zones - добавляем все часовые зоны.
      * @return форма регистрации.
      */
     @GetMapping("/register")
-    public String getRegistrationPage() {
+    public String getRegistrationPage(Model model) {
+        model.addAttribute("zones", userService.getAllTimeZones());
         return "users/register";
     }
 
     /**
      * Добавление пользователя.
+     * Если часовая зона не выбрана, присваеваем зону по умолчанию.
      * Обеспечение уникальности будет нести ответственность СУБД.
      * @param model
      * @param user собранная модель данных пользователя.
@@ -40,6 +45,9 @@ public class UserController {
      */
     @PostMapping("/register")
     public String register(Model model, @ModelAttribute User user) {
+        if (user.getTimezone().isEmpty()) {
+            user.setTimezone(TimeZone.getDefault().getID());
+        }
         var savedUser = userService.create(user);
         if (savedUser.isEmpty()) {
             model.addAttribute("error", "Пользователь с такой почтой уже существует");

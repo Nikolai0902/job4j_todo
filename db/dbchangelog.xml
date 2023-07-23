@@ -14,4 +14,5 @@
     <include file="scripts/007_ddl_create_categories_table.sql" relativeToChangelogFile="true"/>
     <include file="scripts/008_ddl_create_participates_table.sql" relativeToChangelogFile="true"/>
     <include file="scripts/009_dml_insert_categories.sql" relativeToChangelogFile="true"/>
+    <include file="scripts/010_dml_alter_col_user_zone_todo_user.sql" relativeToChangelogFile="true"/>
 </databaseChangeLog>

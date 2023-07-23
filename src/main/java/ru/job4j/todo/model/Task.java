@@ -34,7 +34,7 @@ public class Task {
     private int id;
     private String title;
     private String description;
-    private LocalDateTime created = LocalDateTime.now();
+    private LocalDateTime created;
 
     private boolean done;
 

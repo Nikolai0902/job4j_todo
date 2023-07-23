@@ -4,6 +4,10 @@ import lombok.Data;
 
 import javax.persistence.*;
 
+/**
+ * Модель пользлвателя.
+ * timezone - поле с указанием его часового пояса. В БД - user_zone.
+ */
 @Data
 @Entity
 @Table(name = "todo_user")
@@ -15,4 +19,7 @@ public class User {
     private String name;
     private String login;
     private String password;
+
+    @Column(name = "user_zone")
+    private String timezone;
 }
